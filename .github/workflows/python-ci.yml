@@ -1,0 +1,37 @@
+name: lintting
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  lint-backend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+      - uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b
+        with:
+          working-directory: backend
+      - run: uv sync
+        working-directory: backend
+      - run: uv run ruff check .
+        working-directory: backend
+      - run: uv run mypy .
+        working-directory: backend
+
+  lint-frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+      - run: npm ci
+        working-directory: frontend
+      - run: npm run lint
+        working-directory: frontend
